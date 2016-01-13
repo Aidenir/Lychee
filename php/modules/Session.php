@@ -65,10 +65,14 @@ class Session extends Module {
 		}
 
 		# Check login with crypted hash
-		if(isset( $_COOKIE['SESSION']) && $this->sessionExists($_COOKIE['SESSION']) ){
+		if(isset($_COOKIE['LYCHEEUSER']) && isset( $_COOKIE['SESSION']) && $this->sessionExists($_COOKIE['SESSION']) ){
 			$_SESSION['login']		= true;
 			$_SESSION['identifier']	= $this->settings['identifier'];
 			$public = false;
+			$userdets = explode(":", $_COOKIE['LYCHEEUSER']);
+			$_SESSION['userid'] = $userdets[0];
+			$_SESSION['username'] = $userdets[1];
+			$_SESSION['role'] = $userdets[2];
 		}
  
 		if ($public===false) {
@@ -127,6 +131,7 @@ class Session extends Module {
 				$result = $this->database->query($query);
 
 				setcookie("SESSION", $hash, $expire, "/","", false, true);
+				setcookie("LYCHEEUSER", $_SESSION['userid'].":".$_SESSION['username'].":".$_SESSION['role'], $expire, "/","", false, true);
 
 				return array('role' => $_SESSION['role']);
 		}
